@@ -1,0 +1,26 @@
+version: '3.7'
+
+services:
+
+  whirlpool-fetch:
+    container_name: whirlpool-fetch
+    command: npm start
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      target: whirlpool-fetch
+    restart: on-failure
+    depends_on:
+      - whirlpool-rmq
+
+  whirlpool-rmq:
+    container_name: whirlpool-rmq
+    hostname: wh-rmq-host
+    restart: on-failure
+    image: whirlpool-rmq:latest
+    ports:
+      - "5672:5672"
+      - "8080:15672"
+    
+
+  

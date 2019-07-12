@@ -15,12 +15,9 @@ services:
 
   whirlpool-rmq:
     container_name: whirlpool-rmq
-    hostname: wh-rmq-host
+    hostname: whirlpool-rmq
     restart: on-failure
     image: whirlpool-rmq:latest
     ports:
       - "5672:5672"
       - "8080:15672"
-    
-
-  

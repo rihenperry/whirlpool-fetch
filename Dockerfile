@@ -18,4 +18,4 @@ RUN npm install --no-audit
 
 COPY config/ config/
 COPY src/ src/
-
+COPY logs/ logs/

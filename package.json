@@ -6,8 +6,8 @@
     "build-fetcherq-js": "babel src --out-dir lib",
     "build": "npm run build-fetcherq-js",
     "prestart": "npm run build-fetcherq-js",
-    "start": "cross-env SSR=true node ./lib/listener.js",
-    "debug": "cross-env DEBUG=whirlpool-fetch SSR=true node babel-node src/listener.js",
+    "start": "cross-env SSR=true node ./lib/consumer.js",
+    "debug": "cross-env DEBUG=whirlpool-fetch SSR=true node babel-node src/consumer.js",
     "lint": "eslint .",
     "test": "",
     "precommit": "lint-staged"

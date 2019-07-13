@@ -4,7 +4,7 @@ services:
 
   whirlpool-fetch:
     container_name: whirlpool-fetch
-    command: npm start
+    entrypoint: bash ./scripts/wait-for-it.sh
     build:
       context: ./
       dockerfile: Dockerfile

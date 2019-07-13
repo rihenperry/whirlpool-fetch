@@ -1,5 +1,9 @@
 FROM node:10.16.0 as whirlpool-fetch
 
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends netcat \
+  && rm -rf /var/lib/apt/lists/*
+
 RUN useradd --create-home --shell /bin/bash whirlpool
 
 ARG WH_FETCH_ROOT=/home/whirlpool/whirlpool-fetcher
@@ -17,5 +21,9 @@ COPY package-lock.json ./
 RUN npm install --no-audit
 
 COPY config/ config/
+COPY scripts/ scripts/
 COPY src/ src/
 COPY logs/ logs/
+
+ENTRYPOINT ["bash ./scripts/wait-for-it.sh"]
+

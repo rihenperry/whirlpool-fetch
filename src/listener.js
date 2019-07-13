@@ -47,7 +47,7 @@ async function listenForMessagesFromURLFrontierPublisher() {
     ansConsume = await consume({connection, consumeChannel, publishChannel});
     logger.log('info', ansConsume);
   } catch(e) {
-    logger.log('error', e);
+    logger.log('error', 'consume function ', e);
   }
 }
 

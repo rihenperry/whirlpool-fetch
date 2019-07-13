@@ -3,27 +3,28 @@ import {fetcherPublish as publish} from './publish';
 
 export let fetcherConsume = async function({connection, consumeChannel, publishChannel}) {
   return new Promise((resolve, reject) => {
-    consumeChannel.consume("urlfrontier_p.to.fetcher_c", async function(msg) {
+    consumeChannel.consume("fetcher.q", async function(msg) {
       let msgBody = msg.content.toString();
       let data = JSON.parse(msgBody);
-      let ans;
 
-      logger.log('info', 'fetch consumer received request to process ', JSON.stringify(data));
+      logger.log('info', 'fetch consumer received request to process ', data);
 
       // process the request
 
       // publish to next exchange in the chain for further processing
+      // publish, ack method do not return a promise
       try {
-        ans = await publish(publishChannel);
-        logger.log('info', 'published result %s', ans);
+        let ackpublish = await publish(publishChannel);
+        logger.log('info', 'published results of work done by fetcher_c ', ackpublish);
+
 
         await consumeChannel.ack(msg);
-        resolve('consumer msg acknowledged');
+        logger.log('info', 'consumer msg acknowledged of work done by fetcher_c');
 
-      } catch(e) {
-        logger.log('error', 'occured while publishing %s', e);
+        resolve('processed single message with durable confirmation');
+      } catch (e) {
+        return reject(e);
       }
-
     });
 
     // handle connection closed

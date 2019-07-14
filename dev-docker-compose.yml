@@ -1,0 +1,29 @@
+version: '3.7'
+
+networks:
+  default:
+    external:
+      name: whirlpool-net
+
+
+services:
+
+  whirlpool-fetch:
+    container_name: whirlpool-fetch
+    entrypoint: bash ./scripts/wait-for-it.sh
+    build:
+      context: ./
+      dockerfile: Dockerfile
+      target: whirlpool-fetch
+    restart: on-failure
+#     depends_on:
+#       - whirlpool-rmq
+# 
+#   whirlpool-rmq:
+#     container_name: whirlpool-rmq
+#     hostname: whirlpool-rmq
+#     restart: on-failure
+#     image: rihbyne/whirlpool-rmq:latest
+#     ports:
+#       - "5672:5672"
+#       - "8080:15672"

@@ -14,16 +14,35 @@ services:
     build:
       context: ./
       dockerfile: Dockerfile
-      target: whirlpool-fetch
+      target: whirlpool-fetch-dev
     restart: on-failure
-#     depends_on:
-#       - whirlpool-rmq
-# 
-#   whirlpool-rmq:
-#     container_name: whirlpool-rmq
-#     hostname: whirlpool-rmq
-#     restart: on-failure
-#     image: rihbyne/whirlpool-rmq:latest
-#     ports:
-#       - "5672:5672"
-#       - "8080:15672"
+    depends_on:
+      - whirlpool-rmq
+      - whirlpool-mongodb
+      - whirlpool-parse
+ 
+  whirlpool-rmq:
+    container_name: whirlpool-rmq
+    hostname: whirlpool-rmq
+    restart: on-failure
+    image: rihbyne/whirlpool-rmq:latest
+    ports:
+      - "5672:5672"
+      - "8080:15672"
+
+  whirlpool-mongodb:
+    container_name: whirlpool-mongodb
+    image: rihbyne/whirlpool-mongodb:latest
+    restart: on-failure
+    ports:
+      - "27017:27017"
+    volumes:
+      - /covered/whirlpool/mongodbdata/:/data/db
+
+  whirlpool-parse:
+    container_name: whirlpool-parse
+    image: rihbyne/whirlpool-parse-dev:latest
+    restart: on-failure
+    entrypoint: bash ./scripts/wait-for-it.sh
+
+    

@@ -1,4 +1,4 @@
-FROM node:10.16.0 as whirlpool-fetch
+FROM node:10.16.0 as whirlpool-fetch-base
 
 RUN apt-get update \
   && apt-get install -y --no-install-recommends netcat \
@@ -25,5 +25,14 @@ COPY scripts/ scripts/
 COPY src/ src/
 COPY logs/ logs/
 
+# docker image for dev target
+FROM whirlpool-fetch-base as whirlpool-fetch-dev
+
+COPY scripts/wait-for-it.sh scripts/wait-for-it.sh
 ENTRYPOINT ["bash ./scripts/wait-for-it.sh"]
 
+# docker image for prod target
+FROM whirlpool-fetch-base as whirlpool-fetch-prod
+
+COPY scripts/wait-for-it-prod.sh scripts/wait-for-it-prod.sh
+ENTRYPOINT ["bash ./scripts/wait-for-it-prod.sh"]

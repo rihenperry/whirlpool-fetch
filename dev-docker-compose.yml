@@ -19,8 +19,7 @@ services:
     depends_on:
       - whirlpool-rmq
       - whirlpool-mongodb
-      - whirlpool-parse
- 
+
   whirlpool-rmq:
     container_name: whirlpool-rmq
     hostname: whirlpool-rmq
@@ -39,10 +38,30 @@ services:
     volumes:
       - /covered/whirlpool/mongodbdata/:/data/db
 
+  whirlpool-postgres:
+    container_name: whirlpool-postgres
+    image: rihbyne/whirlpool-postgres:latest
+    restart: on-failure
+    ports:
+      - "5432:5432"
+    volumes:
+      - /covered/whirlpool/postgresdata/:/var/lib/postgresql/data
+
   whirlpool-parse:
     container_name: whirlpool-parse
     image: rihbyne/whirlpool-parse-dev:latest
     restart: on-failure
     entrypoint: bash ./scripts/wait-for-it.sh
+    depends_on:
+      - whirlpool-rmq
+      - whirlpool-mongodb
 
-    
+  whirlpool-contentseen:
+    container_name: whirlpool-contentseen
+    image: rihbyne/whirlpool-contentseen-dev:latest
+    restart: on-failure
+    entrypoint: bash ./scripts/wait-for-it.sh
+    depends_on:
+      - whirlpool-rmq
+      - whirlpool-mongodb
+      - whirlpool-postgres

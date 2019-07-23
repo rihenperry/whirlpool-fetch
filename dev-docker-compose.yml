@@ -77,3 +77,15 @@ services:
       - whirlpool-rmq
       - whirlpool-mongodb
       - whirlpool-postgres
+
+  whirlpool-due:
+    container_name: whirlpool-due
+    image: rihbyne/whirlpool-due-dev:latest
+    entrypoint: bash ./scripts/wait-for-it.sh
+    environment:
+      - PY_ENV=development
+    restart: on-failure
+    depends_on:
+      - whirlpool-rmq
+      - whirlpool-mongodb
+      - whirlpool-postgres

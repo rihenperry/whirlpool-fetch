@@ -6,7 +6,10 @@ export let fetcherPublish = (channel,
                              exchangeName='urlfrontier.ex.fetcher') => {
                                return new Promise((resolve, reject) => {
                                  let senderData = data === null? JSON.stringify({
-                                   advice: "sent by whirlpool fetch publisher"
+                                   url: "http://dice.com/something",
+                                   doc_id: "mongodb_doc_id",
+                                   type: "c_or_nc",
+                                   domain: "http://dice.com.com/"
                                  }): data;
 
                                  channel.publish(exchangeName,

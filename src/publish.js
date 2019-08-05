@@ -1,4 +1,5 @@
 import logger from './helpers/applogging';
+const log = logger(module);
 
 export let fetcherPublish = (channel,
                              data=null,
@@ -18,11 +19,10 @@ export let fetcherPublish = (channel,
                                                  {persistent: true},
                                                  (err, ok) => {
                                                    if (err) {
-                                                     logger.log('error', 'publish malformed ', err);
+                                                     log.error('publish malformed ', err);
                                                      return reject(err);
                                                    } else {
-                                                     logger.log('info', 'publish messaged acknowledged',
-                                                                ok);
+                                                     log.info('publish messaged acknowledged', ok);
                                                      resolve(true);
                                                    }
                                                  });

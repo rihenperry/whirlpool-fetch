@@ -25,6 +25,10 @@ const amqp = require('amqplib');
 const log = logger(module);
 
 async function listenForMessagesFromURLFrontierPublisher() {
+  //connect to mongodb instance using ENV only
+
+  //connect to cache instance using ENV only
+
   // connect to RabbitMQ Instance
   log.info('rabbitmq config %s', JSON.stringify(config.rabbitmq));
   let connection = await amqp.connect(config.rabbitmq);

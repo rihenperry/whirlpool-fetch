@@ -11,6 +11,8 @@ services:
   whirlpool-fetch:
     container_name: whirlpool-fetch
     entrypoint: bash ./scripts/wait-for-it.sh
+    environment:
+      - NODE_ENV=development
     build:
       context: ./
       dockerfile: Dockerfile
@@ -55,7 +57,7 @@ services:
     depends_on:
       - whirlpool-rmq
       - whirlpool-mongodb
-
+  
   whirlpool-contentseen:
     container_name: whirlpool-contentseen
     image: rihbyne/whirlpool-contentseen-dev:latest
@@ -65,7 +67,7 @@ services:
       - whirlpool-rmq
       - whirlpool-mongodb
       - whirlpool-postgres
-
+  
   whirlpool-urlfilter:
     container_name: whirlpool-urlfilter
     image: rihbyne/whirlpool-urlfilter-dev:latest
@@ -77,7 +79,7 @@ services:
       - whirlpool-rmq
       - whirlpool-mongodb
       - whirlpool-postgres
-
+  
   whirlpool-due:
     container_name: whirlpool-due
     image: rihbyne/whirlpool-due-dev:latest
@@ -89,3 +91,13 @@ services:
       - whirlpool-rmq
       - whirlpool-mongodb
       - whirlpool-postgres
+  
+  whirlpool-urlfrontier:
+    container_name: whirlpool-urlfrontier
+    image: rihbyne/whirlpool-urlfrontier-prod:latest
+    entrypoint: "java -cp whirlpool-urlfrontier-1.0-SNAPSHOT-jar-with-dependencies.jar crawler.whirlpool.urlfrontier.Main"
+    environment:
+      - JAVA_ENV=development
+    restart: on-failure
+    depends_on:
+      - whirlpool-rmq

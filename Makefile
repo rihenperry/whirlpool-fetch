@@ -8,7 +8,7 @@ dev-build:
 	docker build --no-cache -t whirlpool-fetch-dev:latest --target whirlpool-fetch-dev .
 
 prod-build:
-	docker build --no-cache -t whirlpool-fetch-prod:latest --target whirlpool-fetch-prod .
+	docker build -t whirlpool-fetch-prod:latest --target whirlpool-fetch-prod .
 
 dev-up:
 	docker-compose -f dev-docker-compose.yml up --build -d

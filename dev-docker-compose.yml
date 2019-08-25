@@ -49,6 +49,13 @@ services:
     volumes:
       - /covered/whirlpool/postgresdata/:/var/lib/postgresql/data
 
+  whirlpool-memcached:
+    container_name: whirlpool-memcached
+    image: memcached:1.5.16
+    restart: on-failure
+    ports:
+      - "11211:11211"
+
   whirlpool-parse:
     container_name: whirlpool-parse
     image: rihbyne/whirlpool-parse-dev:latest

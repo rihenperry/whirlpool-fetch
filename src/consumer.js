@@ -1,9 +1,11 @@
 import logger from './helpers/applogging';
 import {fetcherPublish as publish} from './publish';
+import {authMemcached} from './helpers/config.js';
 
 const log = logger(module);
+const memCacheConn = authMemcached();
 
-export let fetcherConsume = async function({connection, consumeChannel, publishChannel}) {
+export let fetcherConsume = async function({rmqConn, consumeChannel, publishChannel}) {
   return new Promise((resolve, reject) => {
     consumeChannel.consume("fetcher.q", async function(msg) {
       let msgBody = msg.content.toString();
@@ -17,7 +19,7 @@ export let fetcherConsume = async function({connection, consumeChannel, publishC
       // publish, ack method do not return a promise
       try {
         let ackpublish = await publish(publishChannel);
-        log.info('published results of work done by fetcher_c ', ackpublish);
+        log.info('published results of work done by fetcher_c %s', ackpublish);
 
 
         await consumeChannel.ack(msg);
@@ -30,12 +32,12 @@ export let fetcherConsume = async function({connection, consumeChannel, publishC
     });
 
     // handle connection closed
-    connection.on("close", (err) => {
+    rmqConn.on("close", (err) => {
       return reject(err);
     });
 
     // handle errors
-    connection.on("error", (err) => {
+    rmqConn.on("error", (err) => {
       return reject(err);
     });
   });

@@ -15,7 +15,7 @@ services:
       - wh-fetch:/home/whirlpool/whirlpool-fetcher/node_modules
     working_dir: /home/whirlpool/whirlpool-fetcher
     environment:
-      - PY_ENV=development
+      - NODE_ENV=development
     networks:
       - default
 

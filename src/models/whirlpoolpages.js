@@ -1,13 +1,13 @@
-const mongoose = require('mongoose');
+const {mongoose, Schema, model} = require('mongoose');
 import authMongoDB from '../helpers/config.js';
-
-const Schema = mongoose.Schema;
 
 const whirlpoolPageSchema = new Schema({
   domain: String,
   url: String,
-  type: String
+  type: String,
+  html: String,
+  ts: {type: Date, default: Date.now}
 });
 
 
-mongoose.model('whirlpoolpage', whirlpoolPageSchema, 'whirlpoolPages');
+export let WhirlpoolPage = model('whirlpoolpage', whirlpoolPageSchema, 'whirlpoolPages');

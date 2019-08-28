@@ -21,7 +21,7 @@ import winston from 'winston';
 
 const {format} = require('winston');
 const PROJECT_ROOT = path.join(__dirname, '..');
-const LOG_DIR = path.join(PROJECT_ROOT, '..')
+const LOG_DIR = path.join(PROJECT_ROOT, '..');
 
 const options = {
   file: {

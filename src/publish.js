@@ -1,17 +1,21 @@
 import logger from './helpers/applogging';
+import util from 'util';
+
 const log = logger(module);
 
 export let fetcherPublish = (channel,
-                             data=null,
+                             data={},
                              routingKey='fetcher_p.to.parser_c',
                              exchangeName='urlfrontier.ex.fetcher') => {
                                return new Promise((resolve, reject) => {
-                                 let senderData = data === null? JSON.stringify({
-                                   url: "http://dice.com/something",
-                                   doc_id: "mongodb_doc_id",
-                                   type: "c_or_nc",
-                                   domain: "http://dice.com.com/"
-                                 }): data;
+                                 let senderData = (Object.entries(data).length === 0 &&
+                                                   data.constructor === Object)?
+                                     JSON.stringify({
+                                       url: "http://dice.com/something",
+                                       doc_id: "mongodb_doc_id",
+                                       type: "c_or_nc",
+                                       domain: "http://dice.com.com/"
+                                     }): JSON.stringify(data);
 
                                  channel.publish(exchangeName,
                                                  routingKey,

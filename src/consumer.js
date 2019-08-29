@@ -10,10 +10,8 @@ var dnscache = require('dnscache')({
 
 import logger from './helpers/applogging';
 import {fetcherPublish as publish} from './publish';
-import {authMemcached} from './helpers/config.js';
 
 const log = logger(module);
-const memCacheConn = authMemcached();
 
 export let fetcherConsume = async function({rmqConn, consumeChannel, publishChannel}) {
   return new Promise((resolve, reject) => {

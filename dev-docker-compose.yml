@@ -13,11 +13,8 @@ services:
     entrypoint: bash ./scripts/wait-for-it.sh
     environment:
       - NODE_ENV=development
-    build:
-      context: ./
-      dockerfile: Dockerfile
-      target: whirlpool-fetch-dev
     restart: on-failure
+    image: rihbyne/whirlpool-fetch-dev:latest
     depends_on:
       - whirlpool-rmq
       - whirlpool-mongodb

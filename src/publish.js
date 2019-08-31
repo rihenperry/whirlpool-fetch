@@ -19,8 +19,8 @@ export let fetcherPublish = (channel,
 
                                  channel.publish(exchangeName,
                                                  routingKey,
-                                                 Buffer.from(JSON.stringify(senderData), 'utf-8'),
-                                                 {persistent: true},
+                                                 Buffer.from(senderData, 'utf-8'),
+                                                 {persistent: true, headers: {type: "application/json"}},
                                                  (err, ok) => {
                                                    if (err) {
                                                      log.error('publish malformed ', err);

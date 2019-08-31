@@ -59,7 +59,6 @@ export let fetcherConsume = async function({rmqConn, consumeChannel, publishChan
         const {statusCode} = res;
         log.debug('response headers %s', inspect(res.headers));
         res.setEncoding('utf-8');
-        console.log(inspect(res));
 
         res.on('data', d => {
           log.debug('incoming data');

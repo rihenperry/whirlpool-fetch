@@ -4,11 +4,17 @@ install:
 quick-up:
 	docker-compose -f docker-compose.build.yml run --rm quick-up
 
-dev-build:
-	docker build --no-cache -t whirlpool-fetch-dev:latest --target whirlpool-fetch-dev .
-
 prod-build:
 	docker build -t whirlpool-fetch-prod:latest --target whirlpool-fetch-prod .
+
+tag-prod:
+	docker tag whirlpool-fetch-prod:latest rihbyne/whirlpool-fetch-prod:latest
+
+push-prod:
+	docker push rihbyne/whirlpool-fetch-prod:latest
+
+dev-build:
+	docker build -t whirlpool-fetch-dev:latest --target whirlpool-fetch-dev .
 
 dev-up:
 	docker-compose -f dev-docker-compose.yml up --build -d
@@ -30,6 +36,3 @@ push-prod:
 
 tag-dev:
 	docker tag whirlpool-fetch-dev:latest rihbyne/whirlpool-fetch-dev:latest
-
-tag-prod:
-	docker tag whirlpool-fetch-prod:latest rihbyne/whirlpool-fetch-prod:latest

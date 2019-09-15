@@ -10,6 +10,3 @@ node_modules/
 .gitmodules
 LICENSE
 README.md
-prod-docker-compose.yml
-dev-docker-compose.yml
-docker-compose.build.yml

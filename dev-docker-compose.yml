@@ -53,55 +53,58 @@ services:
     ports:
       - "11211:11211"
 
-  whirlpool-parse:
-    container_name: whirlpool-parse
-    image: rihbyne/whirlpool-parse-dev:latest
-    restart: on-failure
-    entrypoint: bash ./scripts/wait-for-it.sh
-    depends_on:
-      - whirlpool-rmq
-      - whirlpool-mongodb
-  
-  whirlpool-contentseen:
-    container_name: whirlpool-contentseen
-    image: rihbyne/whirlpool-contentseen-dev:latest
-    restart: on-failure
-    entrypoint: bash ./scripts/wait-for-it.sh
-    depends_on:
-      - whirlpool-rmq
-      - whirlpool-mongodb
-      - whirlpool-postgres
-  
-  whirlpool-urlfilter:
-    container_name: whirlpool-urlfilter
-    image: rihbyne/whirlpool-urlfilter-dev:latest
-    entrypoint: bash ./scripts/wait-for-it.sh
-    environment:
-      - PY_ENV=development
-    restart: on-failure
-    depends_on:
-      - whirlpool-rmq
-      - whirlpool-mongodb
-      - whirlpool-postgres
-  
-  whirlpool-due:
-    container_name: whirlpool-due
-    image: rihbyne/whirlpool-due-dev:latest
-    entrypoint: bash ./scripts/wait-for-it.sh
-    environment:
-      - PY_ENV=development
-    restart: on-failure
-    depends_on:
-      - whirlpool-rmq
-      - whirlpool-mongodb
-      - whirlpool-postgres
-  
-  whirlpool-urlfrontier:
-    container_name: whirlpool-urlfrontier
-    image: rihbyne/whirlpool-urlfrontier-prod:latest
-    entrypoint: "java -cp whirlpool-urlfrontier-1.0-SNAPSHOT-jar-with-dependencies.jar crawler.whirlpool.urlfrontier.Main"
-    environment:
-      - JAVA_ENV=development
-    restart: on-failure
-    depends_on:
-      - whirlpool-rmq
+ #  whirlpool-parse:
+ #    container_name: whirlpool-parse
+ #    image: rihbyne/whirlpool-parse-dev:latest
+ #    restart: on-failure
+ #    entrypoint: bash ./scripts/wait-for-it.sh
+ #     environment:
+ #       - NODE_ENV=development
+ #       - CRAWL_ORDER_MAX_LIM=1
+ #    depends_on:
+ #      - whirlpool-rmq
+ #      - whirlpool-mongodb
+ #  
+ #  whirlpool-contentseen:
+ #    container_name: whirlpool-contentseen
+ #    image: rihbyne/whirlpool-contentseen-dev:latest
+ #    restart: on-failure
+ #    entrypoint: bash ./scripts/wait-for-it.sh
+ #    depends_on:
+ #      - whirlpool-rmq
+ #      - whirlpool-mongodb
+ #      - whirlpool-postgres
+ #  
+ #  whirlpool-urlfilter:
+ #    container_name: whirlpool-urlfilter
+ #    image: rihbyne/whirlpool-urlfilter-dev:latest
+ #    entrypoint: bash ./scripts/wait-for-it.sh
+ #    environment:
+ #      - PY_ENV=development
+ #    restart: on-failure
+ #    depends_on:
+ #      - whirlpool-rmq
+ #      - whirlpool-mongodb
+ #      - whirlpool-postgres
+ #  
+ #  whirlpool-due:
+ #    container_name: whirlpool-due
+ #    image: rihbyne/whirlpool-due-dev:latest
+ #    entrypoint: bash ./scripts/wait-for-it.sh
+ #    environment:
+ #      - PY_ENV=development
+ #    restart: on-failure
+ #    depends_on:
+ #      - whirlpool-rmq
+ #      - whirlpool-mongodb
+ #      - whirlpool-postgres
+ #  
+ #  whirlpool-urlfrontier:
+ #    container_name: whirlpool-urlfrontier
+ #    image: rihbyne/whirlpool-urlfrontier-prod:latest
+ #    entrypoint: "java -cp whirlpool-urlfrontier-1.0-SNAPSHOT-jar-with-dependencies.jar crawler.whirlpool.urlfrontier.Main"
+ #    environment:
+ #      - JAVA_ENV=development
+ #    restart: on-failure
+ #    depends_on:
+ #      - whirlpool-rmq

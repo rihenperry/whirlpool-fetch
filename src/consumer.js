@@ -11,6 +11,8 @@ import logger from './helpers/applogging';
 import {fetcherPublish as publish} from './publish';
 
 const log = logger(module);
+const NS_PER_SEC = 1e9;
+const MS_PER_NS = 1e-6;
 
 export let fetcherConsume = async function({rmqConn, consumeChannel, publishChannel}) {
   return new Promise((resolve, reject) => {
@@ -22,6 +24,7 @@ export let fetcherConsume = async function({rmqConn, consumeChannel, publishChan
 
       // configure request
       let hrstart = process.hrtime();
+      let ltsCount = process.hrtime();
       let seedUrl = new URL(seed.url);
       let htmlblob = '';
       const doc_id = new Types.ObjectId();
@@ -30,6 +33,7 @@ export let fetcherConsume = async function({rmqConn, consumeChannel, publishChan
         uri: seedUrl,
         hostname: seedUrl.hostname,
         path: seedUrl.pathname,
+        time: true,
         headers: {
           'User-Agent': 'whirlpool-crawler',
           'email': 'rihanstephen.pereira576@myci.csuci.edu',
@@ -44,10 +48,11 @@ export let fetcherConsume = async function({rmqConn, consumeChannel, publishChan
             log.error('custom dns e %s', inspect(e));
           }
 
+          const dnsdiff = process.hrtime(hrstart);
           log.debug('dns entry caching %s, domain %s, metric %d ms',
                     inspect(r),
                     seedUrl.hostname,
-                    process.hrtime(hrstart)[1]/1000000);
+                    ((dnsdiff[0] * NS_PER_SEC + dnsdiff[1]) * MS_PER_NS));
         })
       };
 
@@ -76,7 +81,11 @@ export let fetcherConsume = async function({rmqConn, consumeChannel, publishChan
                   if (statusCode !== 200) {
                     log.error('seed %s http code %s', seed.url, statusCode);
                   } else {
+                    const ltsdiff = process.hrtime(ltsCount);
+                    const ltsInMS = ((ltsdiff[0] * NS_PER_SEC + ltsdiff[1]) * MS_PER_NS);
+                    const ltsInMSRound = Math.round((ltsInMS + Number.EPSILON) * 1000) / 1000;
                     log.debug('reached end of request. seed %s http code %s', seed.url, statusCode);
+                    log.info('elapsed time %s ms', ltsInMSRound);
 
                     let fetchBlob = {
                       _id: doc_id,
@@ -94,7 +103,9 @@ export let fetcherConsume = async function({rmqConn, consumeChannel, publishChan
                     // publish, ack method do not return a promise
                     try {
                       delete fetchBlob.html;
+                      fetchBlob['ltsInMS'] = ltsInMSRound;
                       fetchBlob._id = doc_id.toString();
+
                       let ackpublish = await publish(publishChannel, fetchBlob);
                       log.info('published results of work done by fetcher_c %s', ackpublish);
                     } catch (e) {
@@ -110,9 +121,11 @@ export let fetcherConsume = async function({rmqConn, consumeChannel, publishChan
                 s.on('lookup', (e, addr, f, h) => {
                   if (e) log.error('lookup e %s', inspect(e));
 
+                  const dnsdiff = process.hrtime(hrstart);
+
                   log.warn('socket event, lookup event addr %s, family %s, h %s, metrics %d ms',
                            inspect(addr), f, h,
-                           process.hrtime(hrstart)[1]/1000000);
+                           ((dnsdiff[0] * NS_PER_SEC + dnsdiff[1]) * MS_PER_NS));
                   s.emit('agentRemove');
                 });
               }).end(); //end of request module

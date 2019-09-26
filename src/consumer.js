@@ -27,7 +27,7 @@ export let fetcherConsume = async function({rmqConn, consumeChannel, publishChan
       let ltsCount = process.hrtime();
       let seedUrl = new URL(seed.url);
       let htmlblob = '';
-      const doc_id = new Types.ObjectId();
+      
       const options = {
         method: 'GET',
         uri: seedUrl,
@@ -60,18 +60,11 @@ export let fetcherConsume = async function({rmqConn, consumeChannel, publishChan
       /* end of dns cache */
       request(options,
               async (err, res, body) => {
-                if (err) {
-                  log.error('cannot process url %s, error %e', seed.url, inspect(err));
 
-                  try {
-                    await consumeChannel.ack(msg); // ack regardless of http response code
-                    log.info('consumer msg acknowledged of work done by fetcher_c');
-                    resolve('processed single message with durable confirmation');
-                  } catch (e) {
-                    log.error(e);
-                  } finally {
-                    return;
-                  }
+                try {
+                  if (err) {
+                  log.error('cannot process url %s, error %e', seed.url, inspect(err));
+                  throw(err);
                 } else {
                   const {statusCode} = res;
                   htmlblob = body;
@@ -79,8 +72,11 @@ export let fetcherConsume = async function({rmqConn, consumeChannel, publishChan
                   log.debug('server encoded data(headers) %s', inspect(res.headers));
 
                   if (statusCode !== 200) {
-                    log.error('seed %s http code %s', seed.url, statusCode);
+                    let m = `seed ${seed.url} http code ${statusCode}`;
+                    log.error(m);
+                    throw(m);
                   } else {
+                    const doc_id = new Types.ObjectId();
                     const ltsdiff = process.hrtime(ltsCount);
                     const ltsInMS = ((ltsdiff[0] * NS_PER_SEC + ltsdiff[1]) * MS_PER_NS);
                     const ltsInMSRound = Math.round((ltsInMS + Number.EPSILON) * 1000) / 1000;
@@ -95,28 +91,33 @@ export let fetcherConsume = async function({rmqConn, consumeChannel, publishChan
                       html: htmlblob
                     };
 
-                    let page = WhirlpoolHTMLPage(fetchBlob);
-
-                    page.save();
+                    const page = WhirlpoolHTMLPage(fetchBlob);
 
                     // publish to next exchange in the chain for further processing
                     // publish, ack method do not return a promise
-                    try {
-                      delete fetchBlob.html;
-                      fetchBlob['ltsInMS'] = ltsInMSRound;
-                      fetchBlob._id = doc_id.toString();
+                    delete fetchBlob.html;
+                    fetchBlob['ltsInMS'] = ltsInMSRound;
+                    fetchBlob._id = doc_id.toString();
 
+                    const saved_page = await page.save();
+
+                    if (saved_page === page) {
+                      log.info(`doc ${doc_id} saved to mongodb`);
                       let ackpublish = await publish(publishChannel, fetchBlob);
                       log.info('published results of work done by fetcher_c %s', ackpublish);
-                    } catch (e) {
-                      reject(e);
-                    } finally {
-                      await consumeChannel.ack(msg); // ack regardless of http response code
-                      log.info('consumer msg acknowledged of work done by fetcher_c');
-                      resolve('processed single message with durable confirmation');
-                    }// end of try/catch
+                    } else {
+                      let m = `doc ${doc_id} not saved to mongodb`;
+                      throw(m);
+                    }
                   } // end of if-else
                 } //end of if-else
+                } catch(e) {
+                  log.error(e);
+                } finally {
+                  await consumeChannel.ack(msg); // ack regardless of http response code
+                  log.info('consumer msg acknowledged of work done by fetcher_c');
+                  resolve('processed single message with durable confirmation');
+                } // end of try-catch-finally
               }).on('socket', s => {
                 s.on('lookup', (e, addr, f, h) => {
                   if (e) log.error('lookup e %s', inspect(e));

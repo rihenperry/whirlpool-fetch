@@ -46,7 +46,7 @@
   "dependencies": {
     "amqplib": "^0.5.3",
     "bluebird": "^3.5.5",
-    "lodash": "^4.17.13",
+    "lodash": "^4.17.21",
     "winston": "^3.2.1",
     "winston-daily-rotate-file": "^3.9.0",
     "memcached": "2.2.2",
